@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list android:opacity="translucent"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/purple_500"/>
-    <item android:drawable="@drawable/pata"
-       android:width="200dp"
-        android:height="200dp"
+    <item android:drawable="@color/purple_700"/>
+    <item android:drawable="@drawable/logo"
+       android:width="250dp"
+        android:height="250dp"
         android:gravity="center"/>
 </layer-list>
