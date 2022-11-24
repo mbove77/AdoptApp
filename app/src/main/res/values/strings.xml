@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">AdoptApp</string>
+    <string name="google_sign_up">Ingresar con Google</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="register_btn">Registrate!</string>
+    <string name="name_placeholder">Ingrese su nombre..</string>
+    <string name="name_label">nombre</string>
+    <string name="email_placeholder">Ingrese su e-mail..</string>
+    <string name="email_label">e-mail</string>
+    <string name="password_placeholder">Ingrese su contraseña...</string>
+    <string name="password_label">contraseña</string>
+    <string name="confirm_password_placeholder">Confirme su contraseña...</string>
+    <string name="confirm_password_label">rep. contraseña</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="login_btn">Ingresar!</string>
+    <string name="register_link">¿Ya estás registrado?\nClic aquí para volver a Login.</string>
+    <string name="login_link">¿Todavia no tienes cuenta?\nClic aquí para registrarte.</string>
+    <string name="google_btn">Ingresa con Google</string>
+    <string name="google_btn_loading">Ingresando...</string>
+    <string name="also_separator">Tambien</string>
 </resources>
