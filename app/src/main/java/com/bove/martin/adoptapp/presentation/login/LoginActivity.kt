@@ -1,18 +1,17 @@
 package com.bove.martin.adoptapp.presentation.login
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -22,7 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.bove.martin.adoptapp.R
+import com.bove.martin.adoptapp.data.Resource
 import com.bove.martin.adoptapp.presentation.components.DogAnimation
 import com.bove.martin.adoptapp.presentation.components.GoogleButton
 import com.bove.martin.adoptapp.presentation.components.PassTextFieldComp
@@ -34,7 +35,13 @@ import com.bove.martin.adoptapp.presentation.theme.largeSpace
 import com.bove.martin.adoptapp.presentation.theme.normalSpace
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
+    var emailText by rememberSaveable { mutableStateOf("") }
+    var passText by rememberSaveable { mutableStateOf("") }
+
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+    val loginFlow = viewModel?.loginFlow?.collectAsState()
+
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(extraLargeSpace, normalSpace)
@@ -43,25 +50,58 @@ fun LoginScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
 
     ) {
-        DogAnimation()
-        EmailLoginText()
-        Spacer(modifier = Modifier.height(normalSpace))
-        PassLoginText()
-        Spacer(modifier = Modifier.height(normalSpace))
-        LoginButton()
-        Spacer(modifier = Modifier.height(largeSpace))
-        OrSeparator()
-        Spacer(modifier = Modifier.height(largeSpace))
-        GoogleButton(
-            Modifier.fillMaxWidth(),
-            text = stringResource(R.string.google_btn),
-            loadingText = stringResource(R.string.google_btn_loading),
-            onClicked = {}
-        )
-        Spacer(modifier = Modifier.height(extraLargeSpace))
-        RegisterLink(onClicked = {
-            navController.navigate(Screen.Register.route)
-        })
+        if (!isLoading) {
+            DogAnimation()
+            EmailLoginText(emailText, onValueChange = {
+                emailText = it
+            })
+            Spacer(modifier = Modifier.height(normalSpace))
+            PassLoginText(passText, onValueChange = {
+                passText = it
+            })
+            Spacer(modifier = Modifier.height(normalSpace))
+            LoginButton(onClicked = {
+                viewModel?.login(emailText, passText)
+            })
+            Spacer(modifier = Modifier.height(largeSpace))
+            OrSeparator()
+            Spacer(modifier = Modifier.height(largeSpace))
+            GoogleButton(
+                Modifier.fillMaxWidth(),
+                text = stringResource(R.string.google_btn),
+                loadingText = stringResource(R.string.google_btn_loading),
+                onClicked = {}
+            )
+            Spacer(modifier = Modifier.height(extraLargeSpace))
+            RegisterLink(onClicked = {
+                navController.navigate(Screen.Register.route)
+            })
+        } else {
+            CircularProgressIndicator()
+        }
+    }
+
+    loginFlow?.value.let {
+        when (it) {
+            is Resource.Failire -> {
+                isLoading = false
+                val context = LocalContext.current
+                Toast.makeText(context,
+                    stringResource(R.string.login_error),
+                    Toast.LENGTH_LONG).show()
+            }
+            Resource.Loading -> {
+                isLoading = true
+            }
+            is Resource.Success -> {
+                LaunchedEffect(Unit) {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
+            }
+            else -> {}
+        }
     }
 }
 
@@ -74,7 +114,9 @@ fun OrSeparator() {
             .weight(1f)
             .background(color = Gray)) {}
         ClickableText(
-            text = AnnotatedString(stringResource(R.string.also_separator)), onClick = {}, modifier = Modifier.weight(1f),
+            text = AnnotatedString(stringResource(R.string.also_separator)),
+            onClick = {},
+            modifier = Modifier.weight(1f),
             style = TextStyle(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground
@@ -88,10 +130,9 @@ fun OrSeparator() {
 }
 
 @Composable
-fun EmailLoginText() {
-    var emailText by rememberSaveable { mutableStateOf("") }
-    TextFieldComp(value = emailText,
-        onValueChange = { emailText = it },
+fun EmailLoginText(text: String, onValueChange: (String) -> Unit) {
+    TextFieldComp(value = text,
+        onValueChange = onValueChange,
         placeholder = stringResource(R.string.email_placeholder),
         icon = painterResource(R.drawable.email),
         label = stringResource(R.string.email_label),
@@ -99,11 +140,9 @@ fun EmailLoginText() {
 }
 
 @Composable
-fun PassLoginText() {
-    var passText by rememberSaveable { mutableStateOf("") }
-
-    PassTextFieldComp(value = passText,
-        onValueChange = { passText = it },
+fun PassLoginText(text: String, onValueChange: (String) -> Unit) {
+    PassTextFieldComp(value = text,
+        onValueChange = onValueChange,
         placeholder = stringResource(R.string.password_placeholder),
         icon = painterResource(id = R.drawable.pass_icon),
         label = stringResource(R.string.password_label))
@@ -118,9 +157,9 @@ fun RegisterLink(onClicked: () -> Unit) {
 }
 
 @Composable
-fun LoginButton() {
+fun LoginButton(onClicked: () -> Unit) {
     Button(modifier = Modifier.fillMaxWidth(),
-        onClick = { })
+        onClick = onClicked)
     {
         Text(text = stringResource(R.string.login_btn))
     }
@@ -133,7 +172,7 @@ fun LoginPreview() {
     AdoptAppTheme {
         Surface(modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background) {
-//            LoginScreen()
+            LoginScreen(null, rememberNavController())
         }
     }
 }

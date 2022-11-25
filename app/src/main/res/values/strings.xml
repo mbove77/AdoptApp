@@ -1,4 +1,6 @@
 <resources>
+    <string name="google_sigin_id">200293169188-s97b7m7hfs8iefgrhv6098n5neb7g9v3.apps.googleusercontent.com</string>
+
     <string name="app_name">AdoptApp</string>
     <string name="google_sign_up">Ingresar con Google</string>
     <string name="title_activity_main">MainActivity</string>
@@ -18,4 +20,5 @@
     <string name="google_btn">Ingresa con Google</string>
     <string name="google_btn_loading">Ingresando...</string>
     <string name="also_separator">Tambien</string>
+    <string name="login_error">Ha ocurrido un error con su validación</string>
 </resources>

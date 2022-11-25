@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.bove.martin.adoptapp.presentation.HomeScreen
 import com.bove.martin.adoptapp.presentation.SplashAnimation
+import com.bove.martin.adoptapp.presentation.login.AuthViewModel
 import com.bove.martin.adoptapp.presentation.login.LoginScreen
 import com.bove.martin.adoptapp.presentation.login.RegisterScreen
 
@@ -17,7 +18,7 @@ import com.bove.martin.adoptapp.presentation.login.RegisterScreen
  */
 @Composable
 fun AppNavHost(
-//    viewModel: AuthViewModel,
+    viewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = Screen.Splash.route
@@ -31,13 +32,13 @@ fun AppNavHost(
             SplashAnimation(navController)
         }
         composable(Screen.Login.route) {
-            LoginScreen(navController)
+            LoginScreen(viewModel, navController)
         }
         composable(Screen.Register.route) {
-            RegisterScreen(navController)
+            RegisterScreen(viewModel, navController)
         }
         composable(Screen.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(viewModel, navController)
         }
     }
 }
