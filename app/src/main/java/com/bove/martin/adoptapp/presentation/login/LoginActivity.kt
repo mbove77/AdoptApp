@@ -27,6 +27,7 @@ import com.bove.martin.adoptapp.presentation.components.DogAnimation
 import com.bove.martin.adoptapp.presentation.components.GoogleButton
 import com.bove.martin.adoptapp.presentation.components.PassTextFieldComp
 import com.bove.martin.adoptapp.presentation.components.TextFieldComp
+import com.bove.martin.adoptapp.presentation.navigation.Screen
 import com.bove.martin.adoptapp.presentation.theme.AdoptAppTheme
 import com.bove.martin.adoptapp.presentation.theme.extraLargeSpace
 import com.bove.martin.adoptapp.presentation.theme.largeSpace
@@ -58,7 +59,9 @@ fun LoginScreen(navController: NavHostController) {
             onClicked = {}
         )
         Spacer(modifier = Modifier.height(extraLargeSpace))
-        RegisterLink()
+        RegisterLink(onClicked = {
+            navController.navigate(Screen.Register.route)
+        })
     }
 }
 
@@ -107,8 +110,8 @@ fun PassLoginText() {
 }
 
 @Composable
-fun RegisterLink() {
-    TextButton(onClick = { }) {
+fun RegisterLink(onClicked: () -> Unit) {
+    TextButton(onClick = onClicked) {
         Text(textAlign = TextAlign.Center,
             text = stringResource(id = R.string.login_link))
     }
