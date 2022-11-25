@@ -1,9 +1,6 @@
 package com.bove.martin.adoptapp.presentation.login
 
 import android.content.res.Configuration
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
@@ -24,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.bove.martin.adoptapp.R
 import com.bove.martin.adoptapp.presentation.components.DogAnimation
 import com.bove.martin.adoptapp.presentation.components.GoogleButton
@@ -34,24 +32,8 @@ import com.bove.martin.adoptapp.presentation.theme.extraLargeSpace
 import com.bove.martin.adoptapp.presentation.theme.largeSpace
 import com.bove.martin.adoptapp.presentation.theme.normalSpace
 
-
-class LoginActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AdoptAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background) {
-                    LoginScreen()
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(extraLargeSpace, normalSpace)
@@ -144,11 +126,11 @@ fun LoginButton() {
 @Preview(showBackground = true, name = "Light Theme")
 @Preview(showBackground = true, name = "Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun DefaultPreview2() {
+fun LoginPreview() {
     AdoptAppTheme {
         Surface(modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background) {
-            LoginScreen()
+//            LoginScreen()
         }
     }
 }

@@ -1,9 +1,6 @@
 package com.bove.martin.adoptapp.presentation.login
 
 import android.content.res.Configuration
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -18,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 import com.bove.martin.adoptapp.R
 import com.bove.martin.adoptapp.presentation.components.DogAnimation
 import com.bove.martin.adoptapp.presentation.components.PassTextFieldComp
@@ -27,23 +25,8 @@ import com.bove.martin.adoptapp.presentation.theme.extraLargeSpace
 import com.bove.martin.adoptapp.presentation.theme.largeSpace
 import com.bove.martin.adoptapp.presentation.theme.normalSpace
 
-class RegisterActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AdoptAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background) {
-                    RegisterScreen()
-                }
-            }
-        }
-    }
-}
-
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(navController: NavHostController) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(extraLargeSpace, normalSpace)
@@ -133,10 +116,10 @@ fun RePassRegisterText() {
 @Preview(showBackground = true, name = "Light Theme")
 @Preview(showBackground = true, name = "Dark Theme", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun DefaultPreview() {
+fun RegisterPreview() {
     AdoptAppTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            RegisterScreen()
+//            RegisterScreen()
         }
     }
 }
