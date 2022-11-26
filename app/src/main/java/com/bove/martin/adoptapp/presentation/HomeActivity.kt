@@ -1,7 +1,6 @@
 package com.bove.martin.adoptapp.presentation
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,8 +43,11 @@ fun HomeScreen(viewModel: AuthViewModel?, navController: NavHostController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Toolbar(onLogoutButtonClic: () -> Unit) {
-    TopAppBar(modifier = Modifier.background(MaterialTheme.colorScheme.background),
+    TopAppBar(
         title = { Text(text = stringResource(id = R.string.app_name)) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
         actions = {
            IconButton(onClick = onLogoutButtonClic) {
                Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "Logout")
