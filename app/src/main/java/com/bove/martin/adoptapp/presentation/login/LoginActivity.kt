@@ -1,5 +1,8 @@
 package com.bove.martin.adoptapp.presentation.login
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -42,6 +45,8 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
     var isLoading by rememberSaveable { mutableStateOf(false) }
     val loginFlow = viewModel?.loginFlow?.collectAsState()
 
+    val activity = LocalContext.current.findActivity()
+
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(extraLargeSpace, normalSpace)
@@ -70,7 +75,9 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
                 Modifier.fillMaxWidth(),
                 text = stringResource(R.string.google_btn),
                 loadingText = stringResource(R.string.google_btn_loading),
-                onClicked = {}
+                onClicked = {
+                    viewModel?.googleLogin(activity)
+                }
             )
             Spacer(modifier = Modifier.height(extraLargeSpace))
             RegisterLink(onClicked = {
@@ -105,6 +112,14 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
     }
 }
 
+fun Context.findActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    throw IllegalStateException("no activity")
+}
 
 @Composable
 fun OrSeparator() {

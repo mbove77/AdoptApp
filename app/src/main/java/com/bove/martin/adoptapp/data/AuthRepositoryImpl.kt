@@ -1,7 +1,12 @@
 package com.bove.martin.adoptapp.data
 
+import android.security.keystore.UserNotAuthenticatedException
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -19,6 +24,22 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
         }
     }
 
+    override suspend fun googleLogin(task: Task<GoogleSignInAccount>): Resource<FirebaseUser> {
+        return try {
+            val account = task.getResult(ApiException::class.java)!!
+
+            if(account.idToken != null) {
+                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                val result = firebaseAuth.signInWithCredential(credential).await()
+                Resource.Success(result.user!!)
+            } else {
+                Resource.Failire(UserNotAuthenticatedException())
+            }
+        }catch (e: Exception) {
+            Resource.Failire(e)
+        }
+    }
+
     override suspend fun register(name: String, email: String, password: String): Resource<FirebaseUser> {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
@@ -30,6 +51,6 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
     }
 
     override fun logout() {
-       firebaseAuth.signOut()
+        firebaseAuth.signOut()
     }
 }

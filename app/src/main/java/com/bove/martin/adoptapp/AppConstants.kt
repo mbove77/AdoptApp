@@ -6,6 +6,7 @@ package com.bove.martin.adoptapp
  */
 class AppConstants {
     companion object {
-        val GOOGLE_APP_ID = "200293169188-s97b7m7hfs8iefgrhv6098n5neb7g9v3.apps.googleusercontent.com"
+        val GOOGLE_APP_ID = "523548008112-dq8bmn8cp86dtk2i12hrkjoqaaaae4g3.apps.googleusercontent.com"
+        val GOOGLE_REQ_ID = 188
     }
 }
