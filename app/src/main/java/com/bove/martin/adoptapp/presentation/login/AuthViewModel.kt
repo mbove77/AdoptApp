@@ -1,21 +1,19 @@
 package com.bove.martin.adoptapp.presentation.login
 
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bove.martin.adoptapp.AppConstants.Companion.GOOGLE_APP_ID
-import com.bove.martin.adoptapp.AppConstants.Companion.GOOGLE_REQ_ID
-import com.bove.martin.adoptapp.data.AuthRepository
 import com.bove.martin.adoptapp.data.Resource
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.bove.martin.adoptapp.domain.usecases.EmailLoginUseCase
+import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
+import com.bove.martin.adoptapp.domain.usecases.GetCurrentUserUseCase
+import com.bove.martin.adoptapp.domain.usecases.LogOutUseCase
+import com.bove.martin.adoptapp.domain.usecases.RegisterUseCase
+import com.bove.martin.adoptapp.domain.usecases.StartGoogleLoginUseCase
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -28,8 +26,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    @ApplicationContext val context : Context
+    private val emailLoginUseCase: EmailLoginUseCase,
+    private val startGoogleLoginUseCase: StartGoogleLoginUseCase,
+    private val finishGoogleLoginUseCase: FinishGoogleLoginUseCase,
+    private val registerUseCase: RegisterUseCase,
+    private val logOutUseCase: LogOutUseCase,
+    getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     private val _loginFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
@@ -38,56 +40,42 @@ class AuthViewModel @Inject constructor(
     private val _registerFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
     val registerFlow: StateFlow<Resource<FirebaseUser>?> = _registerFlow
 
-    private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(GOOGLE_APP_ID)
-        .requestEmail()
-        .build()
 
     // TODO Ver como se puede manejar el problema de la llamada doble a Google
     private var googleSignInIsInit = false
-
-    val currentUser: FirebaseUser?
-        get() = authRepository.currentUser
+    private val currentUser = getCurrentUserUseCase()
 
     init {
         if (currentUser != null) {
-            _loginFlow.value = Resource.Success(authRepository.currentUser!!)
+            _loginFlow.value = Resource.Success(currentUser)
         }
     }
 
     fun login(email: String, password: String) = viewModelScope.launch {
         _loginFlow.value = Resource.Loading
-        val result = authRepository.login(email, password)
-        _loginFlow.value = result
+        _loginFlow.value = emailLoginUseCase(email, password)
     }
 
-    fun googleLogin(activity: Activity) {
+    fun startGoogleLogin(activity: Activity) {
         if (!googleSignInIsInit) {
             googleSignInIsInit = true
             _loginFlow.value = Resource.Loading
-
-            val client = GoogleSignIn.getClient(context, gso)
-
-            val loginIntent: Intent = client.signInIntent
-            activity.startActivityForResult(loginIntent, GOOGLE_REQ_ID)
+            startGoogleLoginUseCase(activity)
         }
     }
 
     fun finishGoogleLogin(task: Task<GoogleSignInAccount>) = viewModelScope.launch {
         googleSignInIsInit = false
-        val result = authRepository.googleLogin(task)
-        _loginFlow.value = result
+        _loginFlow.value = finishGoogleLoginUseCase(task)
     }
 
     fun register(name: String, email: String, password: String) = viewModelScope.launch {
         _registerFlow.value = Resource.Loading
-        val result = authRepository.register(name, email, password)
-        _registerFlow.value = result
+        _registerFlow.value = registerUseCase(name, email, password)
     }
 
     fun logout() {
-        authRepository.logout()
-        GoogleSignIn.getClient(context, gso).signOut()
+        logOutUseCase()
         _loginFlow.value = null
         _registerFlow.value = null
     }
