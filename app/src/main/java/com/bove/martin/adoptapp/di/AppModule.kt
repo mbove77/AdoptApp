@@ -1,7 +1,9 @@
 package com.bove.martin.adoptapp.di
 
+import com.bove.martin.adoptapp.AppConstants
 import com.bove.martin.adoptapp.data.AuthRepository
 import com.bove.martin.adoptapp.data.AuthRepositoryImpl
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
@@ -21,4 +23,12 @@ class AppModule {
 
     @Provides
     fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
+
+    @Provides
+    fun provideGso(): GoogleSignInOptions {
+        return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(AppConstants.GOOGLE_APP_ID)
+            .requestEmail()
+            .build()
+    }
 }
