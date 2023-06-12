@@ -1,6 +1,6 @@
 package com.bove.martin.adoptapp.presentation.login
 
-import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bove.martin.adoptapp.data.Resource
@@ -9,7 +9,6 @@ import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.GetCurrentUserUseCase
 import com.bove.martin.adoptapp.domain.usecases.LogOutUseCase
 import com.bove.martin.adoptapp.domain.usecases.RegisterUseCase
-import com.bove.martin.adoptapp.domain.usecases.StartGoogleLoginUseCase
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
@@ -27,7 +26,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val emailLoginUseCase: EmailLoginUseCase,
-    private val startGoogleLoginUseCase: StartGoogleLoginUseCase,
     private val finishGoogleLoginUseCase: FinishGoogleLoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val logOutUseCase: LogOutUseCase,
@@ -41,11 +39,12 @@ class AuthViewModel @Inject constructor(
     val registerFlow: StateFlow<Resource<FirebaseUser>?> = _registerFlow
 
 
-    // TODO Ver como se puede manejar el problema de la llamada doble a Google
+    // TODO Ver como se puede manejar el problema de la llamada doble a Google, es por la re-compoiscion del boton aparentemente.
     private var googleSignInIsInit = false
     private val currentUser = getCurrentUserUseCase()
 
     init {
+        Log.d("AuthViewModel", "init()")
         if (currentUser != null) {
             _loginFlow.value = Resource.Success(currentUser)
         }
@@ -56,15 +55,18 @@ class AuthViewModel @Inject constructor(
         _loginFlow.value = emailLoginUseCase(email, password)
     }
 
-    fun startGoogleLogin(activity: Activity) {
+    fun startGoogleLogin() {
+        Log.d("AuthViewModel", "startGoogleLogin()")
         if (!googleSignInIsInit) {
             googleSignInIsInit = true
             _loginFlow.value = Resource.Loading
-            startGoogleLoginUseCase(activity)
+            _loginFlow.value = Resource.StartGoogleLogin
+
         }
     }
 
     fun finishGoogleLogin(task: Task<GoogleSignInAccount>) = viewModelScope.launch {
+        Log.d("AuthViewModel", "finishGoogleLogin()")
         googleSignInIsInit = false
         _loginFlow.value = finishGoogleLoginUseCase(task)
     }

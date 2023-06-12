@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 /**
  * Created by Martín Bove on 25/11/2022.
@@ -19,12 +20,15 @@ import dagger.hilt.components.SingletonComponent
 @Module
 class AppModule {
     @Provides
+    @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Provides
+    @Singleton
     fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
 
     @Provides
+    @Singleton
     fun provideGso(): GoogleSignInOptions {
         return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(AppConstants.GOOGLE_APP_ID)

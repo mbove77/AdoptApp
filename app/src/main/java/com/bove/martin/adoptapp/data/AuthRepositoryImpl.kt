@@ -20,7 +20,7 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             Resource.Success(result.user!!)
         }catch (e: Exception) {
-            Resource.Failire(e)
+            Resource.Failure(e)
         }
     }
 
@@ -33,10 +33,10 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
                 val result = firebaseAuth.signInWithCredential(credential).await()
                 Resource.Success(result.user!!)
             } else {
-                Resource.Failire(UserNotAuthenticatedException())
+                Resource.Failure(UserNotAuthenticatedException())
             }
         }catch (e: Exception) {
-            Resource.Failire(e)
+            Resource.Failure(e)
         }
     }
 
@@ -46,7 +46,7 @@ class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseA
             result.user?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())?.await()
             Resource.Success(result.user!!)
         }catch (e: Exception) {
-            Resource.Failire(e)
+            Resource.Failure(e)
         }
     }
 

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.Configuration
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -64,8 +65,6 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
     var isLoading by rememberSaveable { mutableStateOf(false) }
     val loginFlow = viewModel?.loginFlow?.collectAsState()
 
-    val activity = LocalContext.current.findActivity()
-
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(extraLargeSpace, normalSpace)
@@ -95,7 +94,8 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
                 text = stringResource(R.string.google_btn),
                 loadingText = stringResource(R.string.google_btn_loading),
                 onClicked = {
-                    viewModel?.startGoogleLogin(activity)
+                    Log.d("AuthViewModel", "GoogleButton onClicked()")
+                    viewModel?.startGoogleLogin()
                 }
             )
             Spacer(modifier = Modifier.height(extraLargeSpace))
@@ -109,7 +109,7 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
 
     loginFlow?.value.let {
         when (it) {
-            is Resource.Failire -> {
+            is Resource.Failure -> {
                 isLoading = false
                 val context = LocalContext.current
                 Toast.makeText(context,
