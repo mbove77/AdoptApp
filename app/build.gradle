@@ -48,6 +48,10 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -95,6 +99,8 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.3.1"
     debugImplementation "androidx.compose.ui:ui-tooling-data:1.3.1"
     debugImplementation "androidx.compose.ui:ui-test-manifest:1.3.1"
+
+    testImplementation "io.mockk:mockk:1.12.2"
 }
 
 // Allow references to generated code
