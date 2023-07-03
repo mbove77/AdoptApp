@@ -1,8 +1,6 @@
 package com.bove.martin.adoptapp.di
 
 import com.bove.martin.adoptapp.AppConstants
-import com.bove.martin.adoptapp.data.AuthRepository
-import com.bove.martin.adoptapp.data.AuthRepositoryImpl
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
@@ -18,14 +16,10 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class AppModule {
+object AppModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
-
-    @Provides
-    @Singleton
-    fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
 
     @Provides
     @Singleton
