@@ -1,17 +1,15 @@
 package com.bove.martin.adoptapp.domain.usecases
 
-import com.bove.martin.adoptapp.data.AuthRepository
+import com.bove.martin.adoptapp.data.FakeAuthRepository
 import com.bove.martin.adoptapp.data.Resource
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.common.truth.Truth.assertThat
+import com.google.firebase.auth.FirebaseUser
 import io.mockk.clearAllMocks
-import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -23,11 +21,13 @@ import org.junit.Test
 
 class FinishGoogleLoginUseCaseTest {
     private lateinit var finishGoogleLoginUseCase: FinishGoogleLoginUseCase
-    private lateinit var authRepository: AuthRepository
+    private lateinit var authRepository: FakeAuthRepository
+    private lateinit var firebaseUser: FirebaseUser
 
     @Before
     fun setUp() {
-        authRepository = mockk()
+        firebaseUser = mockk(relaxed = true)
+        authRepository = FakeAuthRepository(firebaseUser)
         finishGoogleLoginUseCase = FinishGoogleLoginUseCase(authRepository)
     }
 
@@ -40,17 +40,13 @@ class FinishGoogleLoginUseCaseTest {
     @Test
     fun `google login should return success`() = runBlocking {
         // given
-        val googleSignInAccount = mockk<GoogleSignInAccount>(relaxed = true)
         val task = mockk<Task<GoogleSignInAccount>>(relaxed = true)
-        coEvery { authRepository.googleLogin(task) } returns Resource.Success(mockk())
-        coEvery { task.getResult(ApiException::class.java) } returns googleSignInAccount
 
         // when
         val result = finishGoogleLoginUseCase(task)
 
         // then
-        assert(result is Resource.Success)
-        coVerify { authRepository.googleLogin(task) }
+        assertThat(result).isInstanceOf(Resource.Success::class.java)
     }
 
 
@@ -58,17 +54,13 @@ class FinishGoogleLoginUseCaseTest {
     fun `google login should return error`() = runBlocking {
         // given
         val task = mockk<Task<GoogleSignInAccount>>(relaxed = true)
-        val errorMessage = "Google login failed"
-        coEvery { authRepository.googleLogin(task) } returns Resource.Failure(Exception(errorMessage))
-        coEvery { task.getResult(ApiException::class.java) } throws ApiException(mockk(relaxed = true))
+        authRepository.setShouldReturnError(true)
 
         // when
         val result = finishGoogleLoginUseCase(task)
 
         // then
-        assert(result is Resource.Failure)
-        assertEquals(errorMessage, (result as Resource.Failure).exception.message)
-        coVerify { authRepository.googleLogin(task) }
+        assertThat(result).isInstanceOf(Resource.Failure::class.java)
     }
 
 }

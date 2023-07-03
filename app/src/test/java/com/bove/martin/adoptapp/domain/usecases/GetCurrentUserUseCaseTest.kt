@@ -1,10 +1,9 @@
 package com.bove.martin.adoptapp.domain.usecases
 
-import com.bove.martin.adoptapp.data.AuthRepository
+import com.bove.martin.adoptapp.data.FakeAuthRepository
+import com.google.common.truth.Truth.assertThat
 import com.google.firebase.auth.FirebaseUser
-import io.mockk.every
 import io.mockk.mockk
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
@@ -14,36 +13,36 @@ import org.junit.Test
  */
 class GetCurrentUserUseCaseTest {
     private lateinit var getCurrentUserUseCase: GetCurrentUserUseCase
-    private lateinit var authRepository: AuthRepository
+    private lateinit var authRepository: FakeAuthRepository
+    private lateinit var firebaseUser: FirebaseUser
 
     @Before
     fun setUp() {
-        authRepository = mockk()
+        firebaseUser = mockk()
+        authRepository = FakeAuthRepository(firebaseUser)
         getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
     }
 
     @Test
     fun `when authRepository returns non-null currentUser, invoke() should return the currentUser`() {
         // given
-        val currentUser = mockk<FirebaseUser>()
-        every { authRepository.currentUser } returns currentUser
 
         // when
         val result = getCurrentUserUseCase()
 
         // then
-        assertEquals(currentUser, result)
+        assertThat(result).isEqualTo(firebaseUser)
     }
 
     @Test
     fun `when authRepository returns null currentUser, invoke() should return null`() {
         // given
-        every { authRepository.currentUser } returns null
+        authRepository.setShouldReturnError(true)
 
         // when
         val result = getCurrentUserUseCase()
 
         // then
-        assertEquals(null, result)
+        assertThat(result).isNull()
     }
 }
