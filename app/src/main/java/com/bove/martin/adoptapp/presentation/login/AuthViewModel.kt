@@ -3,6 +3,7 @@ package com.bove.martin.adoptapp.presentation.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bove.martin.adoptapp.DispatchersProvider
 import com.bove.martin.adoptapp.data.Resource
 import com.bove.martin.adoptapp.domain.usecases.EmailLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
@@ -29,7 +30,8 @@ class AuthViewModel @Inject constructor(
     private val finishGoogleLoginUseCase: FinishGoogleLoginUseCase,
     private val registerUseCase: RegisterUseCase,
     private val logOutUseCase: LogOutUseCase,
-    getCurrentUserUseCase: GetCurrentUserUseCase
+    getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val dispatchersProvider: DispatchersProvider
 ) : ViewModel() {
 
     private val _loginFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
@@ -50,7 +52,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun login(email: String, password: String) = viewModelScope.launch {
+    fun login(email: String, password: String) = viewModelScope.launch(dispatchersProvider.main) {
         _loginFlow.value = Resource.Loading
         _loginFlow.value = emailLoginUseCase(email, password)
     }
@@ -61,17 +63,16 @@ class AuthViewModel @Inject constructor(
             googleSignInIsInit = true
             _loginFlow.value = Resource.Loading
             _loginFlow.value = Resource.StartGoogleLogin
-
         }
     }
 
-    fun finishGoogleLogin(task: Task<GoogleSignInAccount>) = viewModelScope.launch {
+    fun finishGoogleLogin(task: Task<GoogleSignInAccount>) = viewModelScope.launch(dispatchersProvider.main) {
         Log.d("AuthViewModel", "finishGoogleLogin()")
         googleSignInIsInit = false
         _loginFlow.value = finishGoogleLoginUseCase(task)
     }
 
-    fun register(name: String, email: String, password: String) = viewModelScope.launch {
+    fun register(name: String, email: String, password: String) = viewModelScope.launch(dispatchersProvider.main) {
         _registerFlow.value = Resource.Loading
         _registerFlow.value = registerUseCase(name, email, password)
     }
