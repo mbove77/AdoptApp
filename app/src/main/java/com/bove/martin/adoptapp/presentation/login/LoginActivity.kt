@@ -1,8 +1,5 @@
 package com.bove.martin.adoptapp.presentation.login
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.util.Log
 import android.widget.Toast
@@ -29,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -56,6 +54,7 @@ import com.bove.martin.adoptapp.presentation.theme.AdoptAppTheme
 import com.bove.martin.adoptapp.presentation.theme.extraLargeSpace
 import com.bove.martin.adoptapp.presentation.theme.largeSpace
 import com.bove.martin.adoptapp.presentation.theme.normalSpace
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
@@ -64,6 +63,8 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
 
     var isLoading by rememberSaveable { mutableStateOf(false) }
     val loginFlow = viewModel?.loginFlow?.collectAsState()
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -71,7 +72,6 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
         .fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
         if (!isLoading) {
             DogAnimation()
@@ -84,7 +84,10 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
             })
             Spacer(modifier = Modifier.height(normalSpace))
             LoginButton(onClicked = {
-                viewModel?.login(emailText, passText)
+                scope.launch {
+                    Log.d("LoginButton", "RegisterLink onClicked()")
+                    viewModel?.login(emailText, passText)
+                }
             })
             Spacer(modifier = Modifier.height(largeSpace))
             OrSeparator()
@@ -95,50 +98,49 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
                 loadingText = stringResource(R.string.google_btn_loading),
                 onClicked = {
                     Log.d("AuthViewModel", "GoogleButton onClicked()")
-                    viewModel?.startGoogleLogin()
+                    scope.launch {
+                        viewModel?.startGoogleLogin()
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(extraLargeSpace))
             RegisterLink(onClicked = {
-                navController.navigate(Screen.Register.route)
+                scope.launch {
+                    Log.d("AuthViewModel", "RegisterLink onClicked()")
+                    navController.navigate(Screen.Register.route)
+                }
             })
         } else {
             CircularProgressIndicator()
         }
     }
 
-    loginFlow?.value.let {
-        when (it) {
-            is Resource.Failure -> {
-                isLoading = false
-                val context = LocalContext.current
-                Toast.makeText(context,
-                    stringResource(R.string.login_error),
-                    Toast.LENGTH_LONG).show()
-            }
-            Resource.Loading -> {
-                isLoading = true
-            }
-            is Resource.Success -> {
-                LaunchedEffect(Unit) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+
+    LaunchedEffect(key1 = loginFlow?.value) {
+        loginFlow?.value.let {
+            when (it) {
+                is Resource.Failure -> {
+                    isLoading = false
+                    Toast.makeText(context,
+                        context.getString(R.string.login_error),
+                        Toast.LENGTH_LONG).show()
+                }
+                Resource.Loading -> {
+                    isLoading = true
+                }
+                is Resource.Success -> {
+                    scope.launch {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
                     }
                 }
+                else -> {}
             }
-            else -> {}
         }
     }
 }
 
-fun Context.findActivity(): Activity {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    throw IllegalStateException("no activity")
-}
 
 @Composable
 fun OrSeparator() {
@@ -192,8 +194,7 @@ fun RegisterLink(onClicked: () -> Unit) {
 
 @Composable
 fun LoginButton(onClicked: () -> Unit) {
-    Button(modifier = Modifier.fillMaxWidth(),
-        onClick = onClicked)
+    Button(modifier = Modifier.fillMaxWidth(), onClick = onClicked)
     {
         Text(text = stringResource(R.string.login_btn))
     }

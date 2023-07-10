@@ -63,6 +63,8 @@ class MainActivity : AppCompatActivity() {
                             val loginIntent: Intent = client.signInIntent
                             activityRegister.launch(loginIntent)
                         }
+
+                        else -> {}
                     }
                 }
             }

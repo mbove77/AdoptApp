@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import com.bove.martin.adoptapp.presentation.theme.AdoptAppTheme
 import com.bove.martin.adoptapp.presentation.theme.extraLargeSpace
 import com.bove.martin.adoptapp.presentation.theme.largeSpace
 import com.bove.martin.adoptapp.presentation.theme.normalSpace
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(viewModel: AuthViewModel?, navController: NavHostController) {
@@ -54,15 +56,16 @@ fun RegisterScreen(viewModel: AuthViewModel?, navController: NavHostController) 
     var isLoading by rememberSaveable { mutableStateOf(false) }
     val registerFlow = viewModel?.registerFlow?.collectAsState()
 
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(extraLargeSpace, normalSpace)
         .fillMaxHeight(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
     ) {
-
         if (!isLoading) {
             DogAnimation()
             NameRegisterText(nameText, onValueChange = {
@@ -82,37 +85,42 @@ fun RegisterScreen(viewModel: AuthViewModel?, navController: NavHostController) 
             })
             Spacer(modifier = Modifier.height(largeSpace))
             RegisterButton(onClicked = {
-                viewModel?.register(nameText, emailText, passText)
+               scope.launch {
+                   viewModel?.register(nameText, emailText, passText)
+               }
             })
             Spacer(modifier = Modifier.height(extraLargeSpace))
             LoginLink(onClicked = {
-                navController.navigate(Screen.Login.route)
+                scope.launch {
+                    navController.navigate(Screen.Login.route)
+                }
             })
         } else {
             CircularProgressIndicator()
         }
     }
 
-    registerFlow?.value.let {
-        when (it) {
-            is Resource.Failure -> {
-                isLoading = false
-                val context = LocalContext.current
-                Toast.makeText(context,
-                    stringResource(R.string.login_error),
-                    Toast.LENGTH_LONG).show()
-            }
-            Resource.Loading -> {
-                isLoading = true
-            }
-            is Resource.Success -> {
-                LaunchedEffect(Unit) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+    LaunchedEffect(key1 = registerFlow?.value) {
+        registerFlow?.value.let {
+            when (it) {
+                is Resource.Failure -> {
+                    isLoading = false
+                    Toast.makeText(context,
+                        context.getString(R.string.login_error),
+                        Toast.LENGTH_LONG).show()
+                }
+                Resource.Loading -> {
+                    isLoading = true
+                }
+                is Resource.Success -> {
+                    scope.launch {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
                     }
                 }
+                else -> {}
             }
-            else -> {}
         }
     }
 }

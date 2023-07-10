@@ -15,7 +15,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,14 +35,11 @@ class AuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _loginFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
-    val loginFlow: StateFlow<Resource<FirebaseUser>?> = _loginFlow
+    val loginFlow = _loginFlow.asStateFlow()
 
     private val _registerFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
-    val registerFlow: StateFlow<Resource<FirebaseUser>?> = _registerFlow
+    val registerFlow = _registerFlow.asStateFlow()
 
-
-    // TODO Ver como se puede manejar el problema de la llamada doble a Google, es por la re-compoiscion del boton aparentemente.
-    private var googleSignInIsInit = false
     private val currentUser = getCurrentUserUseCase()
 
     init {
@@ -53,22 +50,19 @@ class AuthViewModel @Inject constructor(
     }
 
     fun login(email: String, password: String) = viewModelScope.launch(dispatchersProvider.main) {
+        Log.d("AuthViewModel", "login($email, $password)")
         _loginFlow.value = Resource.Loading
         _loginFlow.value = emailLoginUseCase(email, password)
     }
 
     fun startGoogleLogin() {
         Log.d("AuthViewModel", "startGoogleLogin()")
-        if (!googleSignInIsInit) {
-            googleSignInIsInit = true
-            _loginFlow.value = Resource.Loading
-            _loginFlow.value = Resource.StartGoogleLogin
-        }
+        _loginFlow.value = Resource.Loading
+        _loginFlow.value = Resource.StartGoogleLogin
     }
 
     fun finishGoogleLogin(task: Task<GoogleSignInAccount>) = viewModelScope.launch(dispatchersProvider.main) {
         Log.d("AuthViewModel", "finishGoogleLogin()")
-        googleSignInIsInit = false
         _loginFlow.value = finishGoogleLoginUseCase(task)
     }
 
