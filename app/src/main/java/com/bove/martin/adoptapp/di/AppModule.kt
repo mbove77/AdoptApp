@@ -1,8 +1,8 @@
 package com.bove.martin.adoptapp.di
 
-import com.bove.martin.adoptapp.AppConstants
 import com.bove.martin.adoptapp.DefaultDispatchers
 import com.bove.martin.adoptapp.DispatchersProvider
+import com.bove.martin.adoptapp.common.AppConstants
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module

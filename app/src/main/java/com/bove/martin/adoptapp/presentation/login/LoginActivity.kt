@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bove.martin.adoptapp.R
-import com.bove.martin.adoptapp.data.Resource
+import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.presentation.components.DogAnimation
 import com.bove.martin.adoptapp.presentation.components.GoogleButton
 import com.bove.martin.adoptapp.presentation.components.PassTextFieldComp

@@ -1,6 +1,8 @@
-package com.bove.martin.adoptapp.data
+package com.bove.martin.adoptapp.data.repository
 
 import android.security.keystore.UserNotAuthenticatedException
+import com.bove.martin.adoptapp.common.Resource
+import com.bove.martin.adoptapp.domain.repository.AuthRepository
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -11,7 +13,8 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) : AuthRepository {
+class AuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) :
+    AuthRepository {
     override val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
 

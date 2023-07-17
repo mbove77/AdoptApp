@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bove.martin.adoptapp.DispatchersProvider
-import com.bove.martin.adoptapp.data.Resource
+import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.domain.usecases.EmailLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.GetCurrentUserUseCase

@@ -1,7 +1,7 @@
 package com.bove.martin.adoptapp.domain.usecases
 
+import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.data.FakeAuthRepository
-import com.bove.martin.adoptapp.data.Resource
 import com.google.common.truth.Truth.assertThat
 import com.google.firebase.auth.FirebaseUser
 import io.mockk.clearAllMocks

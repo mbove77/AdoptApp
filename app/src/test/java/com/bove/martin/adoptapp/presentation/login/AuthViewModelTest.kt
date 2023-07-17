@@ -2,8 +2,8 @@ package com.bove.martin.adoptapp.presentation.login
 
 import app.cash.turbine.test
 import com.bove.martin.adoptapp.TestDispatchers
+import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.data.FakeAuthRepository
-import com.bove.martin.adoptapp.data.Resource
 import com.bove.martin.adoptapp.domain.usecases.EmailLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.GetCurrentUserUseCase

@@ -1,7 +1,7 @@
 package com.bove.martin.adoptapp.di
 
-import com.bove.martin.adoptapp.data.AuthRepository
-import com.bove.martin.adoptapp.data.AuthRepositoryImpl
+import com.bove.martin.adoptapp.data.repository.AuthRepositoryImpl
+import com.bove.martin.adoptapp.domain.repository.AuthRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

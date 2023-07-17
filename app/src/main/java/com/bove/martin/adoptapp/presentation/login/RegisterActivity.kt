@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bove.martin.adoptapp.R
-import com.bove.martin.adoptapp.data.Resource
+import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.presentation.components.DogAnimation
 import com.bove.martin.adoptapp.presentation.components.PassTextFieldComp
 import com.bove.martin.adoptapp.presentation.components.TextFieldComp

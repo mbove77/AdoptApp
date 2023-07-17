@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bove.martin.adoptapp.data.Resource
+import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.presentation.login.AuthViewModel
 import com.bove.martin.adoptapp.presentation.navigation.AppNavHost
 import com.bove.martin.adoptapp.presentation.theme.AdoptAppTheme

@@ -1,4 +1,4 @@
-package com.bove.martin.adoptapp.data
+package com.bove.martin.adoptapp.common
 
 /**
  * Created by Martín Bove on 25/11/2022.

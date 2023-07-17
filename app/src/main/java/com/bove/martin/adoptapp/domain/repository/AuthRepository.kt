@@ -1,5 +1,6 @@
-package com.bove.martin.adoptapp.data
+package com.bove.martin.adoptapp.domain.repository
 
+import com.bove.martin.adoptapp.common.Resource
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseUser

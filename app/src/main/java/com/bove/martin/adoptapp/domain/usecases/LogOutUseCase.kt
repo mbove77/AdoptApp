@@ -1,7 +1,7 @@
 package com.bove.martin.adoptapp.domain.usecases
 
 import android.content.Context
-import com.bove.martin.adoptapp.data.AuthRepository
+import com.bove.martin.adoptapp.domain.repository.AuthRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.qualifiers.ApplicationContext

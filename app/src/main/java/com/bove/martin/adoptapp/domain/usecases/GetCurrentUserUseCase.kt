@@ -1,6 +1,6 @@
 package com.bove.martin.adoptapp.domain.usecases
 
-import com.bove.martin.adoptapp.data.AuthRepository
+import com.bove.martin.adoptapp.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseUser
 import javax.inject.Inject
 
