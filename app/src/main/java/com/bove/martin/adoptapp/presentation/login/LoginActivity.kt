@@ -3,6 +3,8 @@ package com.bove.martin.adoptapp.presentation.login
 import android.content.res.Configuration
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,6 +56,8 @@ import com.bove.martin.adoptapp.presentation.theme.AdoptAppTheme
 import com.bove.martin.adoptapp.presentation.theme.extraLargeSpace
 import com.bove.martin.adoptapp.presentation.theme.largeSpace
 import com.bove.martin.adoptapp.presentation.theme.normalSpace
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,6 +69,13 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
     val loginFlow = viewModel?.loginFlow?.collectAsState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+        viewModel?.loginWithGoogle(task)
+    }
 
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -98,9 +109,15 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
                 loadingText = stringResource(R.string.google_btn_loading),
                 onClicked = {
                     Log.d("AuthViewModel", "GoogleButton onClicked()")
-                    scope.launch {
-                        viewModel?.startGoogleLogin()
-                    }
+                    val gso = GoogleSignInOptions.Builder(
+                        GoogleSignInOptions.DEFAULT_SIGN_IN
+                    )
+                        .requestIdToken(context.getString(R.string.google_sigin_client))
+                        .requestEmail()
+                        .build()
+                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+                    launcher.launch(googleSignInClient.signInIntent)
                 }
             )
             Spacer(modifier = Modifier.height(extraLargeSpace))
@@ -125,16 +142,21 @@ fun LoginScreen(viewModel: AuthViewModel?, navController: NavHostController) {
                         context.getString(R.string.login_error),
                         Toast.LENGTH_LONG).show()
                 }
+
                 Resource.Loading -> {
                     isLoading = true
                 }
+
                 is Resource.Success -> {
                     scope.launch {
                         navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.Home.route) { inclusive = true }
+                            popUpTo(Screen.Home.route) {
+                                inclusive = true
+                            }
                         }
                     }
                 }
+
                 else -> {}
             }
         }

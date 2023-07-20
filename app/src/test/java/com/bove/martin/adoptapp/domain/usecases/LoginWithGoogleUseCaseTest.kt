@@ -19,8 +19,8 @@ import org.junit.Test
  * E-mail: mbove77@gmail.com
  */
 
-class FinishGoogleLoginUseCaseTest {
-    private lateinit var finishGoogleLoginUseCase: FinishGoogleLoginUseCase
+class LoginWithGoogleUseCaseTest {
+    private lateinit var loginWithGoogleUseCase: LoginWithGoogleUseCase
     private lateinit var authRepository: FakeAuthRepository
     private lateinit var firebaseUser: FirebaseUser
 
@@ -28,7 +28,7 @@ class FinishGoogleLoginUseCaseTest {
     fun setUp() {
         firebaseUser = mockk(relaxed = true)
         authRepository = FakeAuthRepository(firebaseUser)
-        finishGoogleLoginUseCase = FinishGoogleLoginUseCase(authRepository)
+        loginWithGoogleUseCase = LoginWithGoogleUseCase(authRepository)
     }
 
     @After
@@ -43,7 +43,7 @@ class FinishGoogleLoginUseCaseTest {
         val task = mockk<Task<GoogleSignInAccount>>(relaxed = true)
 
         // when
-        val result = finishGoogleLoginUseCase(task)
+        val result = loginWithGoogleUseCase(task)
 
         // then
         assertThat(result).isInstanceOf(Resource.Success::class.java)
@@ -57,7 +57,7 @@ class FinishGoogleLoginUseCaseTest {
         authRepository.setShouldReturnError(true)
 
         // when
-        val result = finishGoogleLoginUseCase(task)
+        val result = loginWithGoogleUseCase(task)
 
         // then
         assertThat(result).isInstanceOf(Resource.Failure::class.java)

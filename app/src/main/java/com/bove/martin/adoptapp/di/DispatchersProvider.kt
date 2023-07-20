@@ -1,4 +1,4 @@
-package com.bove.martin.adoptapp
+package com.bove.martin.adoptapp.di
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

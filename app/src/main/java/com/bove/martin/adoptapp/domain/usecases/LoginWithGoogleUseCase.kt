@@ -11,7 +11,7 @@ import javax.inject.Inject
  * Created by Martín Bove on 2/1/2023.
  * E-mail: mbove77@gmail.com
  */
-class FinishGoogleLoginUseCase @Inject constructor(private val authRepository: AuthRepository) {
+class LoginWithGoogleUseCase @Inject constructor(private val authRepository: AuthRepository) {
 
     suspend operator fun invoke(task: Task<GoogleSignInAccount>): Resource<FirebaseUser> {
         return authRepository.googleLogin(task)

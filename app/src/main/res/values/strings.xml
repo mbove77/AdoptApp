@@ -1,6 +1,6 @@
 <resources>
     <string name="google_sigin_id">200293169188-s97b7m7hfs8iefgrhv6098n5neb7g9v3.apps.googleusercontent.com</string>
-
+    <string name="google_sigin_client">523548008112-dq8bmn8cp86dtk2i12hrkjoqaaaae4g3.apps.googleusercontent.com</string>
     <string name="app_name">AdoptApp</string>
     <string name="google_sign_up">Ingresar con Google</string>
     <string name="title_activity_main">MainActivity</string>

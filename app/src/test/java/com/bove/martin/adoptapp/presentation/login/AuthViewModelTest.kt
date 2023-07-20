@@ -5,9 +5,9 @@ import com.bove.martin.adoptapp.TestDispatchers
 import com.bove.martin.adoptapp.common.Resource
 import com.bove.martin.adoptapp.data.FakeAuthRepository
 import com.bove.martin.adoptapp.domain.usecases.EmailLoginUseCase
-import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.GetCurrentUserUseCase
 import com.bove.martin.adoptapp.domain.usecases.LogOutUseCase
+import com.bove.martin.adoptapp.domain.usecases.LoginWithGoogleUseCase
 import com.bove.martin.adoptapp.domain.usecases.RegisterUseCase
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
@@ -28,7 +28,7 @@ class AuthViewModelTest {
 
     private lateinit var emailLoginUseCase: EmailLoginUseCase
     private lateinit var registerUseCase: RegisterUseCase
-    private lateinit var finishGoogleLoginUseCase: FinishGoogleLoginUseCase
+    private lateinit var loginWithGoogleUseCase: LoginWithGoogleUseCase
     private lateinit var getCurrentUserUseCase: GetCurrentUserUseCase
     private lateinit var logOutUseCase: LogOutUseCase
 
@@ -41,13 +41,13 @@ class AuthViewModelTest {
 
         emailLoginUseCase = EmailLoginUseCase(authRepository)
         registerUseCase = RegisterUseCase(authRepository)
-        finishGoogleLoginUseCase = FinishGoogleLoginUseCase(authRepository)
+        loginWithGoogleUseCase = LoginWithGoogleUseCase(authRepository)
         getCurrentUserUseCase = GetCurrentUserUseCase(authRepository)
         logOutUseCase = mockk(relaxed = true)
 
         authViewModel = AuthViewModel(
             emailLoginUseCase,
-            finishGoogleLoginUseCase,
+            loginWithGoogleUseCase,
             registerUseCase,
             logOutUseCase,
             getCurrentUserUseCase,
@@ -127,22 +127,8 @@ class AuthViewModelTest {
     }
 
     @Test
-    fun `when call startGoogleLogin set login flow to loading and then to startGoogle state`() = runTest {
-        authViewModel.startGoogleLogin()
-
-        launch {
-            authViewModel.loginFlow.test {
-                assertThat(awaitItem()).isInstanceOf(Resource::class.java)
-                assertThat(awaitItem()).isInstanceOf(Resource::class.java)
-
-                cancelAndConsumeRemainingEvents()
-            }
-        }
-    }
-
-    @Test
     fun `when call finishLogin successfully set login flow to success`() = runTest {
-       authViewModel.finishGoogleLogin(mockk())
+       authViewModel.loginWithGoogle(mockk())
 
         launch {
             authViewModel.loginFlow.test {
@@ -157,7 +143,7 @@ class AuthViewModelTest {
     @Test
     fun `when call finishLogin and return error set login flow to failure`() = runTest {
         authRepository.setShouldReturnError(true)
-        authViewModel.finishGoogleLogin(mockk())
+        authViewModel.loginWithGoogle(mockk())
 
         launch {
             authViewModel.loginFlow.test {

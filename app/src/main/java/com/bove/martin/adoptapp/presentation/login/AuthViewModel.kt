@@ -3,12 +3,12 @@ package com.bove.martin.adoptapp.presentation.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bove.martin.adoptapp.DispatchersProvider
 import com.bove.martin.adoptapp.common.Resource
+import com.bove.martin.adoptapp.di.DispatchersProvider
 import com.bove.martin.adoptapp.domain.usecases.EmailLoginUseCase
-import com.bove.martin.adoptapp.domain.usecases.FinishGoogleLoginUseCase
 import com.bove.martin.adoptapp.domain.usecases.GetCurrentUserUseCase
 import com.bove.martin.adoptapp.domain.usecases.LogOutUseCase
+import com.bove.martin.adoptapp.domain.usecases.LoginWithGoogleUseCase
 import com.bove.martin.adoptapp.domain.usecases.RegisterUseCase
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
@@ -27,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val emailLoginUseCase: EmailLoginUseCase,
-    private val finishGoogleLoginUseCase: FinishGoogleLoginUseCase,
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val registerUseCase: RegisterUseCase,
     private val logOutUseCase: LogOutUseCase,
     getCurrentUserUseCase: GetCurrentUserUseCase,
@@ -55,15 +55,9 @@ class AuthViewModel @Inject constructor(
         _loginFlow.value = emailLoginUseCase(email, password)
     }
 
-    fun startGoogleLogin() {
-        Log.d("AuthViewModel", "startGoogleLogin()")
-        _loginFlow.value = Resource.Loading
-        _loginFlow.value = Resource.StartGoogleLogin
-    }
-
-    fun finishGoogleLogin(task: Task<GoogleSignInAccount>) = viewModelScope.launch(dispatchersProvider.main) {
+    fun loginWithGoogle(task: Task<GoogleSignInAccount>) = viewModelScope.launch(dispatchersProvider.main) {
         Log.d("AuthViewModel", "finishGoogleLogin()")
-        _loginFlow.value = finishGoogleLoginUseCase(task)
+        _loginFlow.value = loginWithGoogleUseCase(task)
     }
 
     fun register(name: String, email: String, password: String) = viewModelScope.launch(dispatchersProvider.main) {
